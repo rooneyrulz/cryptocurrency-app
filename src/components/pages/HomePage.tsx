@@ -2,30 +2,15 @@ import React from "react";
 import millify from "millify";
 import { Typography, Row, Col, Statistic } from "antd";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { fetchCoins } from "redux/actions";
+import Cryptocurrencies from "./Cryptocurrencies";
+import News from "./News";
+import Spinner from "components/layouts/Spinner";
 
 const HomePage: React.FC = (): JSX.Element => {
   const [coinsLoading, setCoinsLoading] = React.useState<boolean>(true);
   const [coins, setCoins] = React.useState<any>({});
   const [coinsError, setCoinsError] = React.useState<string | null>(null);
-
-  const fetchCoins = React.useCallback(async () => {
-    const config = {
-      headers: {
-        "x-rapidapi-host": "coinranking1.p.rapidapi.com",
-        "x-rapidapi-key": "a312e590d3mshc33cdd642cd7523p186fedjsnd80b69a508d6",
-      },
-    };
-    try {
-      const res = await axios.get(
-        "https://coinranking1.p.rapidapi.com/coins",
-        config
-      );
-      return res;
-    } catch (error) {
-      throw error;
-    }
-  }, []);
 
   React.useEffect(() => {
     fetchCoins()
@@ -37,7 +22,9 @@ const HomePage: React.FC = (): JSX.Element => {
         setCoinsError(err.message);
       })
       .finally(() => setCoinsLoading(false));
-  }, [fetchCoins]);
+  }, []);
+
+  if (coinsLoading) return <Spinner />;
 
   return (
     <>
@@ -51,14 +38,18 @@ const HomePage: React.FC = (): JSX.Element => {
           <Col span={12}>
             <Statistic
               title='Total Cryptocurrencies'
-              value={coinsLoading ? "..." : coins?.data?.stats?.total ?? 0}
+              value={
+                coinsLoading ? "..." : millify(coins?.data?.stats?.total ?? 0)
+              }
             />
           </Col>
           <Col span={12}>
             <Statistic
               title='Total Exchanges'
               value={
-                coinsLoading ? "..." : coins?.data?.stats?.totalExchanges ?? 0
+                coinsLoading
+                  ? "..."
+                  : millify(coins?.data?.stats?.totalExchanges ?? 0)
               }
             />
           </Col>
@@ -66,7 +57,9 @@ const HomePage: React.FC = (): JSX.Element => {
             <Statistic
               title='Total Market Cap'
               value={
-                coinsLoading ? "..." : coins?.data?.stats?.totalMarketCap ?? 0
+                coinsLoading
+                  ? "..."
+                  : millify(coins?.data?.stats?.totalMarketCap ?? 0)
               }
             />
           </Col>
@@ -74,7 +67,9 @@ const HomePage: React.FC = (): JSX.Element => {
             <Statistic
               title='Total 24h Volume'
               value={
-                coinsLoading ? "..." : coins?.data?.stats?.total24hVolume ?? 0
+                coinsLoading
+                  ? "..."
+                  : millify(coins?.data?.stats?.total24hVolume ?? 0)
               }
             />
           </Col>
@@ -82,12 +77,32 @@ const HomePage: React.FC = (): JSX.Element => {
             <Statistic
               title='Total Markets'
               value={
-                coinsLoading ? "..." : coins?.data?.stats?.totalMarkets ?? 0
+                coinsLoading
+                  ? "..."
+                  : millify(coins?.data?.stats?.totalMarkets ?? 0)
               }
             />
           </Col>
         </Row>
       )}
+      <div className='home-heading-container'>
+        <Typography.Title level={2} className='home-title'>
+          Top 10 Cryptocurrencies in the world
+        </Typography.Title>
+        <Typography.Title level={3} className='show-more'>
+          <Link to='/cryptocurrencies'>Show More</Link>
+        </Typography.Title>
+      </div>
+      <Cryptocurrencies isSimplified />
+      <div className='home-heading-container'>
+        <Typography.Title level={2} className='home-title'>
+          Latest Crypto News
+        </Typography.Title>
+        <Typography.Title level={3} className='show-more'>
+          <Link to='/news'>Show More</Link>
+        </Typography.Title>
+      </div>
+      <News isSimplified />
     </>
   );
 };

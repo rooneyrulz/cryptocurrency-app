@@ -2,16 +2,20 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 
 // Components
-import HomePage from "components/pages/HomePage";
-import Exchanges from "components/pages/Exchanges";
-import Cryptocurrencies from "components/pages/Cryptocurrencies";
-import News from "components/pages/News";
-import CryptoDetails from "components/pages/CryptoDetails";
+const HomePage = React.lazy(() => import("components/pages/HomePage"));
+const Exchanges = React.lazy(() => import("components/pages/Exchanges"));
+const News = React.lazy(() => import("components/pages/News"));
+const Cryptocurrencies = React.lazy(
+  () => import("components/pages/Cryptocurrencies")
+);
+const CryptoDetails = React.lazy(
+  () => import("components/pages/CryptoDetails")
+);
 
 type RoutePropsTypes = {
   name: string;
   path: string;
-  component: React.FC;
+  component: React.FC<any | null>;
   exact: boolean;
 };
 
